@@ -7,6 +7,7 @@ using ToDoList.Services;
 using ToDoList.Definitions;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
+using System.Text.Json;
 
 class Program
 {
@@ -35,10 +36,11 @@ class Program
         if (args.Length > 0)
         {
             //https://github.com/commandlineparser/commandline
-            var result = Parser.Default.ParseArguments<Verbs.CreateOptions, Verbs.ViewOptions, Verbs.UpdateOptions>(args)
+            var result = Parser.Default.ParseArguments<Verbs.CreateOptions, Verbs.ViewOptions, Verbs.UpdateOptions, Verbs.ExportOptions>(args)
             .MapResult((Verbs.CreateOptions opts) => CreateEntry(opts, host),
                        (Verbs.ViewOptions opts) => ViewEntries(opts, host),
                        (Verbs.UpdateOptions opts) => UpdateEntry(opts, host),
+                       (Verbs.ExportOptions opts) => ExportEntry(opts, host),
                        errs => HandleParseError(errs));
 
             Console.WriteLine(result);
@@ -119,6 +121,43 @@ class Program
 
         return string.Empty;
 
+    }
+
+    private static string ExportEntry(Verbs.ExportOptions opts, IHost host)
+    {
+        var toDoService = ActivatorUtilities.GetServiceOrCreateInstance<ITodoListService>(host.Services);
+
+        FileStream stream;
+        StreamWriter writer;
+        TextWriter oldOut = Console.Out;
+
+        if (!string.IsNullOrEmpty(opts.Type) && opts.Type == ".txt")
+        {
+            try
+            {
+                //https://stackoverflow.com/questions/4470700/how-to-save-console-writeline-output-to-text-file
+                var listofItems = toDoService.GetAllToDoEntries();
+                var serializedItems = JsonSerializer.Serialize(listofItems);
+
+                stream = new FileStream("./ToDoDb.txt", FileMode.OpenOrCreate, FileAccess.Write);
+                writer = new StreamWriter(stream);
+
+                Console.SetOut(writer);
+                Console.Write(serializedItems);
+                Console.SetOut(oldOut);
+                writer.Close();
+                stream.Close();
+
+                return "Output Database to ./ToDoDb.txt";
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+
+        }
+
+        return string.Empty;
     }
 
     static string StringBuilderFromList(List<ToDoEntry> listOfItems)

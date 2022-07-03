@@ -39,6 +39,14 @@ namespace ToDoList.Definitions
             [Option('d', "ForDate", Required = false, HelpText = "Mark all entries for a given day as complete")]
             public string Date { get; set; }
         }
+
+        [Verb("Export", HelpText = "Export all todo entires")]
+        public class ExportOptions
+        {
+            [Option('t', "Type", Required = false, HelpText = "Type of export. Only configured for .txt")]
+            public string Type { get; set; }
+
+        } 
     }
 
 }
