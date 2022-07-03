@@ -16,6 +16,7 @@ namespace ToDoList.Services
         public ToDoListService(ToDoListDbContext context)
         {
             _context = context;
+            context.Database.EnsureCreated();
         }
 
         //CREATE
@@ -71,21 +72,24 @@ namespace ToDoList.Services
             return true;
         }
 
-        public bool CompleteAllTasksForDate(DateTime dateTime)
+        public List<ToDoEntry>? CompleteAllTasksForDate(DateTime dateTime)
         {
             var itemsToUpdate = _context.ToDoEntry.AsNoTracking().Where(x => x.DueDate.Date == dateTime.Date && !x.IsComplete).ToList();
 
-            if (!itemsToUpdate.Any()) return false;
+            if (!itemsToUpdate.Any()) return null;
+
+            var updatedList = new List<ToDoEntry>();
 
             foreach (var item in itemsToUpdate)
             {
                 item.IsComplete = true;
                 _context.ToDoEntry.Update(item);
                 _context.SaveChanges();
+                updatedList.Add(item);
                 _context.ChangeTracker.Clear();
             }
 
-            return true;
+            return updatedList;
         }
 
         //DELETE

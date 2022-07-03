@@ -13,7 +13,7 @@ namespace ToDoList.Services
         List<ToDoEntry> GetAllToDoEntries();
         List<ToDoEntry> SearchEntries(string searchTerm);
         List<ToDoEntry> OrderByDateDesc();
-        bool CompleteAllTasksForDate(DateTime dateTime);
+        List<ToDoEntry>? CompleteAllTasksForDate(DateTime dateTime);
         bool CompleteTask(string taskName);
 
     }
