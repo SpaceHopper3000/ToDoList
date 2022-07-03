@@ -34,7 +34,6 @@ class Program
     {
         if (args.Length > 0)
         {
-
             //https://github.com/commandlineparser/commandline
             var result = Parser.Default.ParseArguments<Verbs.CreateOptions, Verbs.ViewOptions, Verbs.UpdateOptions>(args)
             .MapResult((Verbs.CreateOptions opts) => CreateEntry(opts, host),

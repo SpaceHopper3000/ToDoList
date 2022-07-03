@@ -21,6 +21,25 @@ namespace ToDoList.Data
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={DbPath}");
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ToDoEntry>().HasData(
+                new ToDoEntry
+                {
+                    Id = 1,
+                    Title = "Set Up ToDo Application",
+                    DueDate = DateTime.Now,
+                    IsComplete = true
+                },
+                new ToDoEntry
+                {
+                    Id = 2,
+                    Title = "Add a first entry",
+                    DueDate = DateTime.Now,
+                    IsComplete = true
+                });
+        }
     }
 
 }
