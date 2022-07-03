@@ -154,6 +154,7 @@ class Program
     }
 
     //in case of errors or --help or --version
+    //not configured due to project brief
     static string HandleParseError(IEnumerable<Error> errs)
     {
         var result = -2;
